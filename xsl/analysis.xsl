@@ -11,7 +11,7 @@
                     select="normalize-space(.//mods:dateCreated[@keyDate='yes'][1])"/>
                 <xsl:variable name="thumburl"
                     select="normalize-space(.//mods:url[@access='preview'][1])"/>
-                <xsl:variable name="type" select="normalize-space(.//mods:genre[1])"/>
+                <xsl:variable name="type" select="normalize-space(.//mods:typeOfResource[1])"/>
                 <xsl:variable name="originalurl"
                     select="normalize-space(.//mods:url[@usage='primary display'][1])"/>
                 <xsl:variable name="id" select="./oai:header/oai:identifier"/>
