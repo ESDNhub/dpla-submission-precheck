@@ -138,7 +138,9 @@
 
 												<div class="alert alert-warning">
 
-														<!-- <p><span class="glyphicon glyphicon-info-sign"></span> The next DPLA Harvest is scheduled for <strong><?php echo date('l, F j, Y',nextDate($harvestday));?></strong>.</p> -->
+														<?php if($showharvestdate) { ?>
+                        <p><span class="glyphicon glyphicon-info-sign"></span> The next DPLA Harvest is scheduled for <strong><?php echo date('l, F j, Y',nextDate($harvestday));?></strong>.</p>
+                        <?php } ?>
 
 														<form class="form-inline">
 																<input type="hidden" name="dataprovider" value="<?php echo $dataprovider; ?>"/>
