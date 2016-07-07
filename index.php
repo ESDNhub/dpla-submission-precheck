@@ -195,8 +195,6 @@
 								?>
 										 
 								<h2>Analysis <span class="small text-muted"><?php echo $setname;?></span></h2>
-								<!-- ><div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"> <strong><?php echo sizeof($setarray);?> records in set</strong></span></div> -->
-
 								<?php
 								$feedURL = $oaibaseurl . "?verb=ListRecords&set=" . $set . "&metadataPrefix=".$metadataprefix;
 								$recordxml = '';
@@ -248,8 +246,8 @@
 
 										// if there's a resumption token, loop through the next page of info
 										if (isset($pagexml->ListRecords->resumptionToken)) {
-										$nextfeedURL = $oaibaseurl . "?verb=ListRecords&resumptionToken=" . $pagexml->ListRecords->resumptionToken;
-										getAnalysis($nextfeedURL);
+												$nextfeedURL = $oaibaseurl . "?verb=ListRecords&resumptionToken=" . $pagexml->ListRecords->resumptionToken;
+												getAnalysis($nextfeedURL);
 										}
 								}
 
@@ -278,6 +276,8 @@
 								}
  
 								?>
+								<div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span>&nbsp;<strong><?php echo sizeof($analysis->record);?> total records in set</strong></div>
+								
 								<div class="panel-group" id="accordion">
 
 										<?php if (!empty($athumburl)) { ?>
@@ -296,7 +296,7 @@
 																				<?php
 																				foreach ($athumburl as $aitem) {
 																						$aitemparts = explode("||", $aitem);
-																						?>
+																				?>
 
 																						<li>
 																								<a target="_blank" href="<?php echo $aitemparts[0]; ?>"><?php echo $aitemparts[1]; ?></a> 
@@ -309,7 +309,7 @@
 														</div>
 												</div>
 
-								 <?php } if (!empty($ageo)) { ?>
+										<?php } if (!empty($ageo)) { ?>
 												<div class="panel panel-default">
 														<div class="panel-heading">
 																<h4 class="panel-title">
@@ -326,24 +326,24 @@
 																				<?php
 																				foreach ($ageo as $aitem) {
 																						$aitemparts = explode("||", $aitem);
-																						?>
+																				?>
 
 																						<li>
 																								<a target="_blank" href="<?php echo $aitemparts[0]; ?>"><?php echo $aitemparts[1]; ?></a> 
 																								<a class="oailink" target="_blank" href="viewoai.php?identifier=<?php echo $aitemparts[2];?>&set=<?php echo $set;?>"><span class="small text-muted glyphicon glyphicon-eye-open"></span></a>
 																						</li>
 																						
-																						 <?php } ?> 
+																				<?php } ?> 
 																		</ul>
 																</div>
 														</div>
 												</div>
-												 <?php } if (!empty($atype)) { ?>
+										<?php } if (!empty($atype)) { ?>
 												<div class="panel panel-default">
 														<div class="panel-heading">
 																<h4 class="panel-title">
 																		<a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
-																		<?php echo count($atype); ?> records in this set are missing 'type' information.
+																				<?php echo count($atype); ?> records in this set are missing 'type' information.
 																		</a>
 																		<a class="helpinfo" data-toggle="popover" data-content="These records will not appear when users limit a search using the 'type' facet."><span class="glyphicon glyphicon-question-sign"></span></a>
 																</h4>
@@ -354,23 +354,23 @@
 																				<?php
 																				foreach ($atype as $aitem) {
 																						$aitemparts = explode("||", $aitem);
-																						?>
+																				?>
 
-																					 <li>
+																						<li>
 																								<a target="_blank" href="<?php echo $aitemparts[0]; ?>"><?php echo $aitemparts[1]; ?></a> 
 																								<a class="oailink" target="_blank" href="viewoai.php?identifier=<?php echo $aitemparts[2];?>&set=<?php echo $set;?>"><span class="small text-muted glyphicon glyphicon-eye-open"></span></a>
 																						</li>
-																						<?php } ?> 
+																				<?php } ?> 
 																		</ul>
 																</div>
 														</div>
 												</div>
-												<?php } if (!empty($adate)) { ?>
+										<?php } if (!empty($adate)) { ?>
 												<div class="panel panel-default">
 														<div class="panel-heading">
 																<h4 class="panel-title">
 																		<a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">
-																		<?php echo count($adate); ?> records in this set are missing date information.
+																				<?php echo count($adate); ?> records in this set are missing date information.
 																		</a>
 																		<a class="helpinfo" data-toggle="popover" data-content="These records will not appear on DPLA timelines."><span class="glyphicon glyphicon-question-sign"></span></a>
 																</h4>
@@ -381,64 +381,64 @@
 																				<?php
 																				foreach ($adate as $aitem) {
 																						$aitemparts = explode("||", $aitem);
-																						?>
+																				?>
 
 																						<li>
 																								<a target="_blank" href="<?php echo $aitemparts[0]; ?>"><?php echo $aitemparts[1]; ?></a> 
 																								<a class="oailink" target="_blank" href="viewoai.php?identifier=<?php echo $aitemparts[2];?>&set=<?php echo $set;?>"><span class="small text-muted glyphicon glyphicon-eye-open"></span></a>
 																						</li>
-																						<?php } ?> 
+																				<?php } ?> 
 																		</ul>
 																</div>
 														</div>
 												</div>
-												<?php } ?>
+										<?php } ?>
 								</div>
 
 								<?php if(empty($adate)&&empty($ageo)&&empty($athumburl)&&empty($atype)) { ?>
 
-								<h4 class="text-muted"><em>Records are complete. No missing data!</em></h4>
+										<h4 class="text-muted"><em>Records are complete. No missing data!</em></h4>
 								
 								<?php } } } } ?>
 
-							 </div>
-				</div>
+								 </div>
+				 </div>
 
-				<?php if(!empty($set)) { ?>
+				 <?php if(!empty($set)) { ?>
 				
-						<div class="row addpadding">
-								<div class="col-md-12">
-								<hr>
-								</div>
-						</div>
-						<iframe scrolling="no" id="samplerecordframe" src="samplerecord.php?dataprovider=<?php echo $dataprovider;?>&set=<?php echo $set;?>"></iframe>
+						 <div class="row addpadding">
+								 <div class="col-md-12">
+										 <hr>
+								 </div>
+						 </div>
+						 <iframe scrolling="no" id="samplerecordframe" src="samplerecord.php?dataprovider=<?php echo $dataprovider;?>&set=<?php echo $set;?>"></iframe>
 				
-				<?php } ?>
-				<div class="row addpadding">
-						<div class="col-md-12">
-								<hr>
-								<p class='text-muted'>Questions? Email <a href='mailto:<?php echo $helpemail;?>'><?php echo $helpcontact;?></a> or call <?php echo $helpphone;?>.
-										<span class="text-muted small attribution" style="float:right;">Icons by <a href='http://www.glyphicons.com'>Glyphicons</a></span></p>
-						</div>
+				 <?php } ?>
+				 <div class="row addpadding">
+						 <div class="col-md-12">
+								 <hr>
+								 <p class='text-muted'>Questions? Email <a href='mailto:<?php echo $helpemail;?>'><?php echo $helpcontact;?></a> or call <?php echo $helpphone;?>.
+										 <span class="text-muted small attribution" style="float:right;">Icons by <a href='http://www.glyphicons.com'>Glyphicons</a></span></p>
+						 </div>
+				 </div>
 				</div>
-		</div>
 			 
-		<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-		<!-- Include all compiled plugins (below), or include individual files as needed -->
-		<script src="js/bootstrap.min.js"></script>
-		<script type='text/javascript'>
-				// trigger bootstrap help text popups
-				$('.helpinfo').popover({
-						trigger: 'hover',
-						placement: 'right',
-						container: 'body'
-				});
+				<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+				<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+				<!-- Include all compiled plugins (below), or include individual files as needed -->
+				<script src="js/bootstrap.min.js"></script>
+				<script type='text/javascript'>
+				 // trigger bootstrap help text popups
+				 $('.helpinfo').popover({
+						 trigger: 'hover',
+						 placement: 'right',
+						 container: 'body'
+				 });
 				
-				// resize iframe to fit content
-				$("#samplerecordframe").load(function() {
-						$(this).height( $(this).contents().find("body").height() );
-				});
-		</script>
-</body>
+				 // resize iframe to fit content
+				 $("#samplerecordframe").load(function() {
+						 $(this).height( $(this).contents().find("body").height() );
+				 });
+				</script>
+		</body>
 </html>
