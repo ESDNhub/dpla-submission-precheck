@@ -130,6 +130,7 @@
             $url = isset($samplearray->url) ? $samplearray->url : '';
             $thumburl = !empty($samplearray->thumburl) ? $samplearray->thumburl : 'img/thumbnail.png';
             $rights = isset($samplearray->rights) ? $samplearray->rights : '';
+            $format = isset($samplearray->format) ? $samplearray->format : '';
             $type = isset($samplearray->type) ? $samplearray->type : '';
             $description = isset($samplearray->description) ? $samplearray->description : '';
             $contributing_institution = isset($samplearray->contributing_institution) ? $samplearray->contributing_institution : '';
@@ -198,22 +199,27 @@
                                         </a></th><td><?php foreach( $location as $singleloc) { echo $singleloc."<br/>"; };?></td></tr>
                                                         <?php } ?>
                                                         
+                                                        <?php if((string) $format!=='') { ?>
+                                                            <tr><th>Format</th><td><?php echo $format;?></td></tr>
+                                                        <?php } ?>
+                                                        
+                                                        
                                                         <?php if((string) $type!=='') { ?>
-                                                        <tr><th>Type</th><td><?php echo $type;?></td></tr>
+                                                            <tr><th>Type</th><td><?php echo $type;?></td></tr>
                                                         <?php } ?>
                                                         
                                                         <?php if(!empty($subject)) { ?>
-                                                        <tr><th>Subject</th><td><?php foreach( $subject as $singlesub) { echo $singlesub."<br/>"; };?></td></tr>
+                                                            <tr><th>Subject</th><td><?php foreach( $subject as $singlesub) { echo $singlesub."<br/>"; };?></td></tr>
                                                         <?php } ?>
                                                         
                                                         <?php if((string) $rights!=='') { ?>
-                                                        <tr><th>Rights</th><td><?php echo $rights;?></td></tr>
+                                                            <tr><th>Rights</th><td><?php echo $rights;?></td></tr>
                                                         <?php } ?>
                                                         
                                                         <?php if((string) $url!=='') { ?>
-                                                        <tr><th>URL</th><td><a target="_blank" href="<?php echo $url;?>"><?php echo $url;?></a> 
-                                                       <a class="oailink" target="_blank" href="viewoai.php?identifier=<?php echo $sampleid;?>&set=<?php echo $set;?>"><span class="small text-muted glyphicon glyphicon-eye-open"></span></a>
-                                                         </td></tr>
+                                                            <tr><th>URL</th><td><a target="_blank" href="<?php echo $url;?>"><?php echo $url;?></a> 
+								<a class="oailink" target="_blank" href="viewoai.php?identifier=<?php echo $sampleid;?>&set=<?php echo $set;?>"><span class="small text-muted glyphicon glyphicon-eye-open"></span></a>
+                                                            </td></tr>
                                                         <?php } ?>
                                                     </tbody>
                                                 </table>
@@ -224,19 +230,19 @@
                                 </div>
                             </div>
                         </div>
-          <?php    } ?>
+							<?php    } ?>
         </div>
         <br/>
-                         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
         <!-- Include all compiled plugins (below), or include individual files as needed -->
         <script src="js/bootstrap.min.js"></script>
         <script type='text/javascript'>
-            $('.helpinfo').popover({
-                trigger: 'hover',
-                placement: 'right',
-                container: 'body'
-            });
+         $('.helpinfo').popover({
+             trigger: 'hover',
+             placement: 'right',
+             container: 'body'
+         });
         </script>
     </body>
 </html>

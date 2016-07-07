@@ -8,7 +8,8 @@
                     <url><xsl:value-of select="oai:OAI-PMH/oai:GetRecord/oai:record//mods:url[@usage='primary display'][1]"/></url>
                     <thumburl><xsl:value-of select="oai:OAI-PMH/oai:GetRecord/oai:record//mods:url[@access='preview'][1]"/></thumburl>
                     <rights><xsl:value-of select="oai:OAI-PMH/oai:GetRecord/oai:record//mods:accessCondition[1]"/></rights>
-                    <type><xsl:value-of select="oai:OAI-PMH/oai:GetRecord/oai:record//mods:genre[1]"/></type>
+                    <format><xsl:value-of select="oai:OAI-PMH/oai:GetRecord/oai:record//mods:physicalDescription[1]/mods:form[1]"/></format>
+                    <type><xsl:value-of select="oai:OAI-PMH/oai:GetRecord/oai:record//mods:typeOfResource[1]"/></type>
                     <description><xsl:value-of select="oai:OAI-PMH/oai:GetRecord/oai:record//mods:note[@type='content'][1]"/></description>
                     <contributing_institution><xsl:value-of select="oai:OAI-PMH/oai:GetRecord/oai:record//mods:note[@type='ownership'][1]"/></contributing_institution>
                     <creator>
