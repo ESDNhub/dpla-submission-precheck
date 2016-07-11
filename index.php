@@ -204,56 +204,42 @@
 
 										global $recordxml;
 										global $oaibaseurl;
-
-										// create curl resource
-										$ch = curl_init();
-
-										// set url
-										curl_setopt($ch, CURLOPT_URL, $feedURL);
-
-										//return the transfer as a string
-										curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-
-										// $output contains the output string
-										$pageoutput = curl_exec($ch);
-
-										// close curl resource to free up system resources
-										curl_close($ch);
-
-										try {
-												$pagexml = new SimpleXMLElement($pageoutput);
-										} catch (Exception $e) {
-
-										}
+										global $total_records;
+										$total_records = 0;
 
 										// transform xml output into a list of issues
 										$xml = new DOMDocument;
 										if (@$xml->load($feedURL) === false) {
 												echo "<p>Please enter a valid feed URL.</p>";
 										} else {
+												// keep a running total of non-deleted records
+												$xpath = new DOMXPath($xml);
+												$xpath->registerNameSpace('oai', 'http://www.openarchives.org/OAI/2.0/');
+														$recs = $xpath->query("//oai:record[./oai:header[not(@status='deleted')]]");
+														$total_records += $recs->length;
+														
+												// do transforms for the anaylsis
 												$xsl = new DOMDocument;
 												$xslpath = 'xsl/analysis.xsl';
 												$xsl->load($xslpath);
 												$proc = new XSLTProcessor;
 												$proc->importStylesheet($xsl);
 
-
 												$result = trim($proc->transformToXML($xml));
-
 												$recordxml .= $result;
-
 										}
 
 										// if there's a resumption token, loop through the next page of info
 										if (isset($pagexml->ListRecords->resumptionToken)) {
 												$nextfeedURL = $oaibaseurl . "?verb=ListRecords&resumptionToken=" . $pagexml->ListRecords->resumptionToken;
 												getAnalysis($nextfeedURL);
-										}
+										} 
 								}
 
 								getAnalysis($feedURL);
 
 								$analysis = simplexml_load_string("<results>" . $recordxml . "</results>");
+
 
 								// build a parseable array of data hashes
 								$ageo = array();
@@ -276,7 +262,7 @@
 								}
  
 								?>
-								<div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span>&nbsp;<strong><?php echo sizeof($analysis->record);?> total records in set</strong></div>
+								<div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span>&nbsp;<strong><?php echo $total_records;?> total records in set</strong></div>
 								
 								<div class="panel-group" id="accordion">
 
