@@ -37,6 +37,11 @@
                             <data><xsl:value-of select="current()"/></data>
                         </xsl:for-each>
                     </subject>
+                    <language>
+                        <xsl:for-each select="oai:OAI-PMH/oai:GetRecord/oai:record//mods:language/mods:languageTerm">
+                            <data><xsl:value-of select="current()"/></data>
+                        </xsl:for-each>
+                    </language>
                 </record>
     </xsl:template>
 </xsl:stylesheet>

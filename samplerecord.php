@@ -141,96 +141,103 @@
             $publisher = isset($samplearray->publisher->data) ? $samplearray->publisher->data : array();
             $location = isset($samplearray->location->data) ? $samplearray->location->data : array();
             $subject = isset($samplearray->subject->data) ? $samplearray->subject->data : array();
+              $language = isset($samplearray->language->data) ? $samplearray->language->data : array();
            
-        ?>
+          ?>
+            <div class="row">
+                <div class="col-md-6"><h2>Sample Record 
+                    <span class="small">
+                        <a class="helpinfo" data-toggle="popover" data-content="This is an example of how your content will appear on the DPLA's web site.">
+                            <span class="glyphicon glyphicon-question-sign"></span>
+                        </a>
+                    </span>
+                </h2></div>
+                <div class="col-md-6"><a class="margintop btn btn-default pull-right" onclick="window.location.replace(window.location.href);">Load Another Record</a></div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="itemcard">
+                        <h3><?php echo $title;?></h3>
                         <div class="row">
-                            <div class="col-md-6"><h2>Sample Record 
-                                    <span class="small">
-                                        <a class="helpinfo" data-toggle="popover" data-content="This is an example of how your content will appear on the DPLA's web site.">
-                                            <span class="glyphicon glyphicon-question-sign"></span>
-                                        </a>
-                                    </span>
-                                </h2></div>
-                            <div class="col-md-6"><a class="margintop btn btn-default pull-right" onclick="window.location.replace(window.location.href);">Load Another Record</a></div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="itemcard">
-                                    <h3><?php echo $title;?></h3>
-                                    <div class="row">
-                                        <div class="col-md-2">
-                                            <img class="img-responsive preview" src="<?php echo $thumburl;?>"/>
-                                        </div>
-                                        <div class="col-md-10">
-                                            <div class="table-responsive">
-                                                <table class="table">
-                                                    <tbody>
-                                                         <?php if(!empty($creator)) { ?>
-                                                        <tr><th>Creator</th><td><?php foreach( $creator as $singlecreator) { echo $singlecreator."<br/>"; };?></td></tr>
+                            <div class="col-md-2">
+                                <img class="img-responsive preview" src="<?php echo $thumburl;?>"/>
+                            </div>
+                            <div class="col-md-10">
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <tbody>
+                                            <?php if(!empty($creator)) { ?>
+                                                <tr><th>Creator</th><td><?php foreach( $creator as $singlecreator) { echo $singlecreator."<br/>"; };?></td></tr>
 
-                                                        <?php } ?>
+                                            <?php } ?>
                                                         
-                                                        <?php if(!empty($date)) { ?>
-                                                        <!--<tr><th>Created Date</th><td><?php foreach( $date as $singledate) { echo $singledate."<br/>"; };?></td></tr>-->
-                                                        <tr><th>Created Date  <a class="helpinfo text-muted" data-toggle="popover" data-content="The DPLA will attempt to normalize dates as records are harvested.">
-                                                        <span class="glyphicon glyphicon-question-sign"></span>
-                                                        </a></th><td><?php foreach( $date as $singledate) { echo $singledate."<br/>"; };?></td></tr>
-                                                        <?php } ?>
+                                            <?php if(!empty($date)) { ?>
+                                                <!--<tr><th>Created Date</th><td><?php foreach( $date as $singledate) { echo $singledate."<br/>"; };?></td></tr>-->
+                                                <tr><th>Created Date  <a class="helpinfo text-muted" data-toggle="popover" data-content="The DPLA will attempt to normalize dates as records are harvested.">
+                                                    <span class="glyphicon glyphicon-question-sign"></span>
+                                                </a></th><td><?php foreach( $date as $singledate) { echo $singledate."<br/>"; };?></td></tr>
+                                                <?php } ?>
                                                         
-                                                        <?php if($provider!=='') { ?>
-                                                        <tr><th>Partner</th><td><?php echo $provider;?></td></tr>
-                                                        <?php } ?>
+                                                <?php if($provider!=='') { ?>
+                                                    <tr><th>Partner</th><td><?php echo $provider;?></td></tr>
+                                                <?php } ?>
                                                         
-                                                        <?php if((string) $contributing_institution!=='') { ?>
-                                                        <tr><th>Contributing Institution</th><td><?php echo $contributing_institution;?></td></tr>
-                                                        <?php } ?>
+                                                <?php if((string) $contributing_institution!=='') { ?>
+                                                    <tr><th>Contributing Institution</th><td><?php echo $contributing_institution;?></td></tr>
+                                                <?php } ?>
                                                         
-                                                        <?php if(!empty($publisher)) { ?>
-                                                        <tr><th>Publisher</th><td><?php foreach( $publisher as $singlepub) { echo $singlepub."<br/>"; };?></td></tr>
-                                                        <?php } ?>
+                                                <?php if(!empty($publisher)) { ?>
+                                                    <tr><th>Publisher</th><td><?php foreach( $publisher as $singlepub) { echo $singlepub."<br/>"; };?></td></tr>
+                                                <?php } ?>
                                                         
-                                                        <?php if((string) $description!=='') { ?>
-                                                        <tr><th>Description</th><td><?php echo $description;?></td></tr>
-                                                        <?php } ?>
+                                                <?php if((string) $description!=='') { ?>
+                                                    <tr><th>Description</th><td><?php echo $description;?></td></tr>
+                                                <?php } ?>
                                                         
-                                                        <?php if(!empty($location)) { ?>
-                                                        <tr><th>Location  <a class="helpinfo text-muted" data-toggle="popover" data-content="The DPLA will attempt to normalize/geocode locations as records are harvested.">
-                                            <span class="glyphicon glyphicon-question-sign"></span>
-                                        </a></th><td><?php foreach( $location as $singleloc) { echo $singleloc."<br/>"; };?></td></tr>
-                                                        <?php } ?>
+                                                <?php if(!empty($location)) { ?>
+                                                    <tr><th>Location  <a class="helpinfo text-muted" data-toggle="popover" data-content="The DPLA will attempt to normalize/geocode locations as records are harvested.">
+							<span class="glyphicon glyphicon-question-sign"></span>
+						    </a></th><td><?php foreach( $location as $singleloc) { echo $singleloc."<br/>"; };?></td></tr>
+                                                <?php } ?>
                                                         
-                                                        <?php if((string) $format!=='') { ?>
-                                                            <tr><th>Format</th><td><?php echo $format;?></td></tr>
-                                                        <?php } ?>
+                                                <?php if((string) $format!=='') { ?>
+                                                    <tr><th>Format</th><td><?php echo $format;?></td></tr>
+                                                <?php } ?>
                                                         
                                                         
-                                                        <?php if((string) $type!=='') { ?>
-                                                            <tr><th>Type</th><td><?php echo $type;?></td></tr>
-                                                        <?php } ?>
+                                                <?php if((string) $type!=='') { ?>
+                                                    <tr><th>Type</th><td><?php echo $type;?></td></tr>
+                                                <?php } ?>
                                                         
-                                                        <?php if(!empty($subject)) { ?>
-                                                            <tr><th>Subject</th><td><?php foreach( $subject as $singlesub) { echo $singlesub."<br/>"; };?></td></tr>
-                                                        <?php } ?>
+                                                <?php if(!empty($subject)) { ?>
+                                                    <tr><th>Subject</th><td><?php foreach( $subject as $singlesub) { echo $singlesub."<br/>"; };?></td></tr>
+                                                <?php } ?>
                                                         
-                                                        <?php if((string) $rights!=='') { ?>
-                                                            <tr><th>Rights</th><td><?php echo $rights;?></td></tr>
-                                                        <?php } ?>
+                                                <?php if(!empty($language)) { ?>
+                                                    <tr><th>Language <a class="helpinfo text-muted" data-toggle="popover" data-content="The DPLA will attempt to normalize language terms as records are harvested.">
+							<span class="glyphicon glyphicon-question-sign"></span>
+						    </a></th><td><?php foreach( $language as $singlelang) { echo $singlelang."<br/>"; };?></td></tr>
+                                                <?php } ?>
+                                                
+                                                <?php if((string) $rights!=='') { ?>
+                                                    <tr><th>Rights</th><td><?php echo $rights;?></td></tr>
+                                                <?php } ?>
                                                         
-                                                        <?php if((string) $url!=='') { ?>
-                                                            <tr><th>URL</th><td><a target="_blank" href="<?php echo $url;?>"><?php echo $url;?></a> 
-								<a class="oailink" target="_blank" href="viewoai.php?identifier=<?php echo $sampleid;?>&set=<?php echo $set;?>"><span class="small text-muted glyphicon glyphicon-eye-open"></span></a>
-                                                            </td></tr>
-                                                        <?php } ?>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                          
-                                        </div>
-                                    </div>
+                                                <?php if((string) $url!=='') { ?>
+                                                    <tr><th>URL</th><td><a target="_blank" href="<?php echo $url;?>"><?php echo $url;?></a> 
+							<a class="oailink" target="_blank" href="viewoai.php?identifier=<?php echo $sampleid;?>&set=<?php echo $set;?>"><span class="small text-muted glyphicon glyphicon-eye-open"></span></a>
+                                                    </td></tr>
+                                                <?php } ?>
+                                        </tbody>
+                                    </table>
                                 </div>
+                                          
                             </div>
                         </div>
-							<?php    } ?>
+                    </div>
+                </div>
+            </div>
+					    <?php    } ?>
         </div>
         <br/>
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

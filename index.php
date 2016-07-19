@@ -22,11 +22,11 @@
 		<body>
 				<?php
 				// include application-wide configuration options
-			 include('config.php');
-			 date_default_timezone_set($TZ);
+				include('config.php');
+				date_default_timezone_set($TZ);
 			 
-			 // establish function to produce the date of next harvest
-			 function nextDate($userDay) {			
+				// establish function to produce the date of next harvest
+				function nextDate($userDay) {			
 						$today = date('d'); // today
 						$target = date('Y-m-'.$userDay); // target day
 						if($today <= $userDay) {
@@ -119,19 +119,19 @@
 
 										<?php if (0) { ?>
 
-										<div class="alert alert-danger"><span class="glyphicon glyphicon-info-sign"></span><strong> No valid Data Provider indicated.</strong></div>
+												<div class="alert alert-danger"><span class="glyphicon glyphicon-info-sign"></span><strong> No valid Data Provider indicated.</strong></div>
 
 										<?php
 										} else {
 
-										$setxml = getSets('');
-										processSets($setxml, $dataprovider);
+												$setxml = getSets('');
+												processSets($setxml, $dataprovider);
 										
-										sort($setarray);
+												sort($setarray);
 										
-										if (empty($setarray)) { ?>
+												if (empty($setarray)) { ?>
 
-										<div class="alert alert-danger"><span class="glyphicon glyphicon-info-sign"></span><strong> No valid Data Provider indicated.</strong></div>
+												<div class="alert alert-danger"><span class="glyphicon glyphicon-info-sign"></span><strong> No valid Data Provider indicated.</strong></div>
 
 										<?php } else { ?>
 
@@ -139,8 +139,8 @@
 												<div class="alert alert-warning">
 
 														<?php if($showharvestdate) { ?>
-                        <p><span class="glyphicon glyphicon-info-sign"></span> The next DPLA Harvest is scheduled for <strong><?php echo date('l, F j, Y',nextDate($harvestday));?></strong>.</p>
-                        <?php } ?>
+																<p><span class="glyphicon glyphicon-info-sign"></span> The next DPLA Harvest is scheduled for <strong><?php echo date('l, F j, Y',nextDate($harvestday));?></strong>.</p>
+														<?php } ?>
 
 														<form class="form-inline">
 																<input type="hidden" name="dataprovider" value="<?php echo $dataprovider; ?>"/>
@@ -156,7 +156,7 @@
 																						$setparts = explode("|", $sethash);
 																						$prettysetarray[$setparts[1]] = $setparts[0];
 																						
-																						?>
+																				?>
 
 																						<option value="<?php echo $setparts[1]; ?>"><?php echo $setparts[0]; ?> (<?php echo $setparts[1]; ?>)</option>
 																				
@@ -180,233 +180,252 @@
 												$setcheck = "|" . $set . "|";
 
 												if (stristr($setstring, $setcheck) === FALSE) {
-														?>
+												?>
 
 														<div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span><strong> Please choose a Data Set.</strong></div>
 
 												<?php } else { ?>
 								</div>
-				 </div>
-				 <div class="row addpadding">
-								 <div class="col-md-12">
+						</div>
+						<div class="row addpadding">
+								<div class="col-md-12">
 										 
-								<?php
-								$setname = $prettysetarray[$set];
-								?>
+										<?php
+										$setname = $prettysetarray[$set];
+										?>
 										 
-								<h2>Analysis <span class="small text-muted"><?php echo $setname;?></span></h2>
-								<?php
-								$feedURL = $oaibaseurl . "?verb=ListRecords&set=" . $set . "&metadataPrefix=".$metadataprefix;
-								$recordxml = '';
+										<h2>Analysis <span class="small text-muted"><?php echo $setname;?></span></h2>
+										<?php
+										$feedURL = $oaibaseurl . "?verb=ListRecords&set=" . $set . "&metadataPrefix=".$metadataprefix;
+										$recordxml = '';
+										
+										// establish function to produce an analysis of the current set
+										function getAnalysis($feedURL) {
 
-								// establish function to produce an analysis of the current set
-								function getAnalysis($feedURL) {
+												global $recordxml;
+												global $oaibaseurl;
 
-										global $recordxml;
-										global $oaibaseurl;
-										global $total_records;
-										$total_records = 0;
-
-										// transform xml output into a list of issues
-										$xml = new DOMDocument;
-										if (@$xml->load($feedURL) === false) {
-												echo "<p>Please enter a valid feed URL.</p>";
-										} else {
-												// keep a running total of non-deleted records
-												$xpath = new DOMXPath($xml);
-												$xpath->registerNameSpace('oai', 'http://www.openarchives.org/OAI/2.0/');
+												global $total_records;
+												// create curl resource
+												$ch = curl_init();
+												
+												// set url
+												curl_setopt($ch, CURLOPT_URL, $feedURL);
+															 
+												//return the transfer as a string
+												curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+															 
+												// $output contains the output string
+												$pageoutput = curl_exec($ch);
+																					 
+												// close curl resource to free up system resources
+												curl_close($ch);
+																					 
+												try {
+														$pagexml = new SimpleXMLElement($pageoutput);
+												} catch (Exception $e) {
+												}
+										
+												// transform xml output into a list of issues
+												$xml = new DOMDocument;
+												if (@$xml->load($feedURL) === false) {
+														echo "<p>Please enter a valid feed URL.</p>";
+												} else {
+														// keep a running total of non-deleted records
+														$xpath = new DOMXPath($xml);
+														$xpath->registerNameSpace('oai', 'http://www.openarchives.org/OAI/2.0/');
 														$recs = $xpath->query("//oai:record[./oai:header[not(@status='deleted')]]");
 														$total_records += $recs->length;
 														
-												// do transforms for the anaylsis
-												$xsl = new DOMDocument;
-												$xslpath = 'xsl/analysis.xsl';
-												$xsl->load($xslpath);
-												$proc = new XSLTProcessor;
-												$proc->importStylesheet($xsl);
+														// do transforms for the anaylsis
+														$xsl = new DOMDocument;
+														$xslpath = 'xsl/analysis.xsl';
+														$xsl->load($xslpath);
+														$proc = new XSLTProcessor;
+														$proc->importStylesheet($xsl);
 
-												$result = trim($proc->transformToXML($xml));
-												$recordxml .= $result;
+														$result = trim($proc->transformToXML($xml));
+														$recordxml .= $result;
+												}
+
+												// if there's a resumption token, loop through the next page of info
+												if (isset($pagexml->ListRecords->resumptionToken)) {
+														$nextfeedURL = $oaibaseurl . "?verb=ListRecords&resumptionToken=" . $pagexml->ListRecords->resumptionToken;
+														getAnalysis($nextfeedURL);
+												} 
 										}
 
-										// if there's a resumption token, loop through the next page of info
-										if (isset($pagexml->ListRecords->resumptionToken)) {
-												$nextfeedURL = $oaibaseurl . "?verb=ListRecords&resumptionToken=" . $pagexml->ListRecords->resumptionToken;
-												getAnalysis($nextfeedURL);
-										} 
-								}
+										getAnalysis($feedURL);
 
-								getAnalysis($feedURL);
+										$analysis = simplexml_load_string("<results>" . $recordxml . "</results>");
 
-								$analysis = simplexml_load_string("<results>" . $recordxml . "</results>");
-
-
-								// build a parseable array of data hashes
-								$ageo = array();
-								$athumburl = array();
-								$adate = array();
-								$atype = array();
-								foreach ($analysis->record as $arec) {
-										if (isset($arec->geo)) {
-												$ageo[] = (string) $arec->url . "||" . $arec->title . "||" . $arec->oai_id;
+										// build a parseable array of data hashes
+										$ageo = array();
+										$athumburl = array();
+										$adate = array();
+										$atype = array();
+										foreach ($analysis->record as $arec) {
+												if (isset($arec->geo)) {
+														$ageo[] = (string) $arec->url . "||" . $arec->title . "||" . $arec->oai_id;
+												}
+												if (isset($arec->thumburl)) {
+														$athumburl[] = (string) $arec->url . "||" . $arec->title. "||" . $arec->oai_id;
+												}
+												if (isset($arec->type)) {
+														$atype[] = (string) $arec->url . "||" . $arec->title. "||" . $arec->oai_id;
+												}
+												if (isset($arec->date)) {
+														$adate[] = (string) $arec->url . "||" . $arec->title. "||" . $arec->oai_id;
+												}
 										}
-										if (isset($arec->thumburl)) {
-												$athumburl[] = (string) $arec->url . "||" . $arec->title. "||" . $arec->oai_id;
-										}
-										if (isset($arec->type)) {
-												$atype[] = (string) $arec->url . "||" . $arec->title. "||" . $arec->oai_id;
-										}
-										if (isset($arec->date)) {
-												$adate[] = (string) $arec->url . "||" . $arec->title. "||" . $arec->oai_id;
-										}
-								}
  
-								?>
-								<div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span>&nbsp;<strong><?php echo $total_records;?> total records in set</strong></div>
+										?>
+
+										<div class="alert alert-info"><span class="glyphicon glyphicon-info-sign"></span>&nbsp;<strong><?php echo $total_records;?> total records in set</strong></div>
 								
-								<div class="panel-group" id="accordion">
+										<div class="panel-group" id="accordion">
 
-										<?php if (!empty($athumburl)) { ?>
-												<div class="panel panel-default">
-														<div class="panel-heading">
-																<h4 class="panel-title">
-																		<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
-																				<?php echo count($athumburl); ?> records in this set are missing thumbnail images.
-																		</a>
-																		<a class="helpinfo" data-toggle="popover" data-content="These records will display a default thumbnail on the DPLA site."><span class="glyphicon glyphicon-question-sign"></span></a>
-																</h4>
-														</div>
-														<div id="collapseOne" class="panel-collapse collapse">
-																<div class="panel-body">
-																		<ul>
-																				<?php
-																				foreach ($athumburl as $aitem) {
-																						$aitemparts = explode("||", $aitem);
-																				?>
+												<?php if (!empty($athumburl)) { ?>
+														<div class="panel panel-default">
+																<div class="panel-heading">
+																		<h4 class="panel-title">
+																				<a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">
+																						<?php echo count($athumburl); ?> records in this set are missing thumbnail images.
+																				</a>
+																				<a class="helpinfo" data-toggle="popover" data-content="These records will display a default thumbnail on the DPLA site."><span class="glyphicon glyphicon-question-sign"></span></a>
+																		</h4>
+																</div>
+																<div id="collapseOne" class="panel-collapse collapse">
+																		<div class="panel-body">
+																				<ul>
+																						<?php
+																						foreach ($athumburl as $aitem) {
+																								$aitemparts = explode("||", $aitem);
+																						?>
 
-																						<li>
-																								<a target="_blank" href="<?php echo $aitemparts[0]; ?>"><?php echo $aitemparts[1]; ?></a> 
-																								<a class="oailink" target="_blank" href="viewoai.php?identifier=<?php echo $aitemparts[2];?>&set=<?php echo $set;?>"><span class="small text-muted glyphicon glyphicon-eye-open"></span></a>
-																						</li>
+																								<li>
+																										<a target="_blank" href="<?php echo $aitemparts[0]; ?>"><?php echo $aitemparts[1]; ?></a> 
+																										<a class="oailink" target="_blank" href="viewoai.php?identifier=<?php echo $aitemparts[2];?>&set=<?php echo $set;?>"><span class="small text-muted glyphicon glyphicon-eye-open"></span></a>
+																								</li>
 
-																				<?php } ?> 
-																		</ul>
+																						<?php } ?> 
+																				</ul>
+																		</div>
 																</div>
 														</div>
-												</div>
 
-										<?php } if (!empty($ageo)) { ?>
-												<div class="panel panel-default">
-														<div class="panel-heading">
-																<h4 class="panel-title">
-																		<a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
-																				<?php echo count($ageo); ?> records in this set are missing geographic data.
-																		</a>
-																		<a class="helpinfo" data-toggle="popover" data-content="These records will not appear in map searches."><span class="glyphicon glyphicon-question-sign"></span></a>
-																</h4>
+												<?php } if (!empty($ageo)) { ?>
+														<div class="panel panel-default">
+																<div class="panel-heading">
+																		<h4 class="panel-title">
+																				<a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">
+																						<?php echo count($ageo); ?> records in this set are missing geographic data.
+																				</a>
+																				<a class="helpinfo" data-toggle="popover" data-content="These records will not appear in map searches."><span class="glyphicon glyphicon-question-sign"></span></a>
+																		</h4>
 
-														</div>
-														<div id="collapseTwo" class="panel-collapse collapse">
-																<div class="panel-body">
-																		<ul>
-																				<?php
-																				foreach ($ageo as $aitem) {
-																						$aitemparts = explode("||", $aitem);
-																				?>
+																</div>
+																<div id="collapseTwo" class="panel-collapse collapse">
+																		<div class="panel-body">
+																				<ul>
+																						<?php
+																						foreach ($ageo as $aitem) {
+																								$aitemparts = explode("||", $aitem);
+																						?>
 
-																						<li>
-																								<a target="_blank" href="<?php echo $aitemparts[0]; ?>"><?php echo $aitemparts[1]; ?></a> 
-																								<a class="oailink" target="_blank" href="viewoai.php?identifier=<?php echo $aitemparts[2];?>&set=<?php echo $set;?>"><span class="small text-muted glyphicon glyphicon-eye-open"></span></a>
-																						</li>
+																								<li>
+																										<a target="_blank" href="<?php echo $aitemparts[0]; ?>"><?php echo $aitemparts[1]; ?></a> 
+																										<a class="oailink" target="_blank" href="viewoai.php?identifier=<?php echo $aitemparts[2];?>&set=<?php echo $set;?>"><span class="small text-muted glyphicon glyphicon-eye-open"></span></a>
+																								</li>
 																						
-																				<?php } ?> 
-																		</ul>
+																						<?php } ?> 
+																				</ul>
+																		</div>
 																</div>
 														</div>
-												</div>
-										<?php } if (!empty($atype)) { ?>
-												<div class="panel panel-default">
-														<div class="panel-heading">
-																<h4 class="panel-title">
-																		<a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
-																				<?php echo count($atype); ?> records in this set are missing 'type' information.
-																		</a>
-																		<a class="helpinfo" data-toggle="popover" data-content="These records will not appear when users limit a search using the 'type' facet."><span class="glyphicon glyphicon-question-sign"></span></a>
-																</h4>
-														</div>
-														<div id="collapseThree" class="panel-collapse collapse">
-																<div class="panel-body">
-																		<ul>
-																				<?php
-																				foreach ($atype as $aitem) {
-																						$aitemparts = explode("||", $aitem);
-																				?>
+												<?php } if (!empty($atype)) { ?>
+														<div class="panel panel-default">
+																<div class="panel-heading">
+																		<h4 class="panel-title">
+																				<a data-toggle="collapse" data-parent="#accordion" href="#collapseThree">
+																						<?php echo count($atype); ?> records in this set are missing 'type' information.
+																				</a>
+																				<a class="helpinfo" data-toggle="popover" data-content="These records will not appear when users limit a search using the 'type' facet."><span class="glyphicon glyphicon-question-sign"></span></a>
+																		</h4>
+																</div>
+																<div id="collapseThree" class="panel-collapse collapse">
+																		<div class="panel-body">
+																				<ul>
+																						<?php
+																						foreach ($atype as $aitem) {
+																								$aitemparts = explode("||", $aitem);
+																						?>
 
-																						<li>
-																								<a target="_blank" href="<?php echo $aitemparts[0]; ?>"><?php echo $aitemparts[1]; ?></a> 
-																								<a class="oailink" target="_blank" href="viewoai.php?identifier=<?php echo $aitemparts[2];?>&set=<?php echo $set;?>"><span class="small text-muted glyphicon glyphicon-eye-open"></span></a>
-																						</li>
-																				<?php } ?> 
-																		</ul>
+																								<li>
+																										<a target="_blank" href="<?php echo $aitemparts[0]; ?>"><?php echo $aitemparts[1]; ?></a> 
+																										<a class="oailink" target="_blank" href="viewoai.php?identifier=<?php echo $aitemparts[2];?>&set=<?php echo $set;?>"><span class="small text-muted glyphicon glyphicon-eye-open"></span></a>
+																								</li>
+																						<?php } ?> 
+																				</ul>
+																		</div>
 																</div>
 														</div>
-												</div>
-										<?php } if (!empty($adate)) { ?>
-												<div class="panel panel-default">
-														<div class="panel-heading">
-																<h4 class="panel-title">
-																		<a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">
-																				<?php echo count($adate); ?> records in this set are missing date information.
-																		</a>
-																		<a class="helpinfo" data-toggle="popover" data-content="These records will not appear on DPLA timelines."><span class="glyphicon glyphicon-question-sign"></span></a>
-																</h4>
-														</div>
-														<div id="collapseFour" class="panel-collapse collapse">
-																<div class="panel-body">
-																		<ul>
-																				<?php
-																				foreach ($adate as $aitem) {
-																						$aitemparts = explode("||", $aitem);
-																				?>
+												<?php } if (!empty($adate)) { ?>
+														<div class="panel panel-default">
+																<div class="panel-heading">
+																		<h4 class="panel-title">
+																				<a data-toggle="collapse" data-parent="#accordion" href="#collapseFour">
+																						<?php echo count($adate); ?> records in this set are missing date information.
+																				</a>
+																				<a class="helpinfo" data-toggle="popover" data-content="These records will not appear on DPLA timelines."><span class="glyphicon glyphicon-question-sign"></span></a>
+																		</h4>
+																</div>
+																<div id="collapseFour" class="panel-collapse collapse">
+																		<div class="panel-body">
+																				<ul>
+																						<?php
+																						foreach ($adate as $aitem) {
+																								$aitemparts = explode("||", $aitem);
+																						?>
 
-																						<li>
-																								<a target="_blank" href="<?php echo $aitemparts[0]; ?>"><?php echo $aitemparts[1]; ?></a> 
-																								<a class="oailink" target="_blank" href="viewoai.php?identifier=<?php echo $aitemparts[2];?>&set=<?php echo $set;?>"><span class="small text-muted glyphicon glyphicon-eye-open"></span></a>
-																						</li>
-																				<?php } ?> 
-																		</ul>
+																								<li>
+																										<a target="_blank" href="<?php echo $aitemparts[0]; ?>"><?php echo $aitemparts[1]; ?></a> 
+																										<a class="oailink" target="_blank" href="viewoai.php?identifier=<?php echo $aitemparts[2];?>&set=<?php echo $set;?>"><span class="small text-muted glyphicon glyphicon-eye-open"></span></a>
+																								</li>
+																						<?php } ?> 
+																				</ul>
+																		</div>
 																</div>
 														</div>
-												</div>
-										<?php } ?>
-								</div>
+												<?php } ?>
+										</div>
 
-								<?php if(empty($adate)&&empty($ageo)&&empty($athumburl)&&empty($atype)) { ?>
+										<?php if(empty($adate)&&empty($ageo)&&empty($athumburl)&&empty($atype)) { ?>
 
-										<h4 class="text-muted"><em>Records are complete. No missing data!</em></h4>
+												<h4 class="text-muted"><em>Records are complete. No missing data!</em></h4>
 								
-								<?php } } } } ?>
+										<?php } } } } ?>
 
-								 </div>
-				 </div>
+								</div>
+						</div>
 
-				 <?php if(!empty($set)) { ?>
+						<?php if(!empty($set)) { ?>
 				
-						 <div class="row addpadding">
-								 <div class="col-md-12">
-										 <hr>
-								 </div>
-						 </div>
-						 <iframe scrolling="no" id="samplerecordframe" src="samplerecord.php?dataprovider=<?php echo $dataprovider;?>&set=<?php echo $set;?>"></iframe>
+								<div class="row addpadding">
+										<div class="col-md-12">
+												<hr>
+										</div>
+								</div>
+								<iframe scrolling="no" id="samplerecordframe" src="samplerecord.php?dataprovider=<?php echo $dataprovider;?>&set=<?php echo $set;?>"></iframe>
 				
-				 <?php } ?>
-				 <div class="row addpadding">
-						 <div class="col-md-12">
-								 <hr>
-								 <p class='text-muted'>Questions? Email <a href='mailto:<?php echo $helpemail;?>'><?php echo $helpcontact;?></a> or call <?php echo $helpphone;?>.
-										 <span class="text-muted small attribution" style="float:right;">Icons by <a href='http://www.glyphicons.com'>Glyphicons</a></span></p>
-						 </div>
-				 </div>
+						<?php } ?>
+						<div class="row addpadding">
+								<div class="col-md-12">
+										<hr>
+										<p class='text-muted'>Questions? Email <a href='mailto:<?php echo $helpemail;?>'><?php echo $helpcontact;?></a> or call <?php echo $helpphone;?>.
+												<span class="text-muted small attribution" style="float:right;">Icons by <a href='http://www.glyphicons.com'>Glyphicons</a></span></p>
+								</div>
+						</div>
 				</div>
 			 
 				<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
