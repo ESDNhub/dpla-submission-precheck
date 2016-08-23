@@ -11,7 +11,7 @@
       <description><xsl:value-of select="oai:OAI-PMH/oai:GetRecord/oai:record//mods:note[@type='content'][1]"/></description>
       <contributing_institution><xsl:value-of select="oai:OAI-PMH/oai:GetRecord/oai:record//mods:note[@type='ownership'][1]"/></contributing_institution>
       <creator>
-        <xsl:for-each select="oai:OAI-PMH/oai:GetRecord/oai:record//mods:name[mods:role/mods:roleTerm='creator']/mods:namePart">
+        <xsl:for-each select="oai:OAI-PMH/oai:GetRecord/oai:record//mods:name[mods:role[contains(./mods:roleTerm,'reator')]]/mods:namePart">
           <data><xsl:value-of select="current()"/></data>
         </xsl:for-each>
       </creator>
